@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>管理后台 · 智伴晚晴</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+  <style>
+    .admin-top {
+      background:linear-gradient(135deg,var(--admin),var(--admin-dark)); color:#fff;
+      padding:24px; border-radius:0 0 24px 24px; margin:-20px -20px 24px; text-align:center;
+    }
+    .admin-top h1 { font-size:24px; font-weight:700; }
+    .admin-top p { font-size:14px; opacity:0.9; margin-top:4px; }
+    .st-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:16px; margin-bottom:28px; }
+    .st-card { background:var(--bg-card); border-radius:var(--radius); padding:20px; box-shadow:var(--shadow); border:1px solid var(--border); text-align:center; }
+    .st-card .num { font-size:30px; font-weight:800; color:var(--admin); }
+    .st-card .lbl { font-size:14px; color:var(--text-secondary); margin-top:4px; }
+    .sec-tabs { display:flex; margin-bottom:20px; border-radius:var(--radius-sm); overflow:hidden; border:2px solid var(--border); }
+    .sec-tabs button { flex:1; padding:12px; font-size:15px; font-weight:600; font-family:var(--font); border:none; cursor:pointer; background:var(--bg); color:var(--text-secondary); transition:var(--transition); }
+    .sec-tabs button.active { background:var(--admin); color:#fff; }
+    .twrap { overflow-x:auto; background:var(--bg-card); border-radius:var(--radius); box-shadow:var(--shadow); border:1px solid var(--border); }
+    table { width:100%; border-collapse:collapse; font-size:14px; }
+    th,td { padding:12px 16px; text-align:left; border-bottom:1px solid var(--border); }
+    th { background:var(--bg); font-weight:600; color:var(--text-secondary); white-space:nowrap; }
+    tr:hover { background:var(--bg); }
+    .act-btn { padding:6px 14px; border:none; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600; font-family:var(--font); }
+    .act-btn.approve { background:#E8F5E9; color:#2E7D32; }
+    .act-btn.reject { background:#FDE8E8; color:#C62828; }
+    .act-btn:hover { opacity:0.8; }
+    .sec-content { display:none; }
+    .sec-content.active { display:block; }
+  </style>
+</head>
+<body>
+  <button class="back-btn" onclick="goTo('login.html')">←</button>
+  <div class="admin-top"><h1>⚙️ 管理后台</h1><p>用户审核 · 订单管理 · 数据统计</p></div>
+  <div class="container">
+    <div class="st-grid">
+      <div class="st-card"><div class="num">1,248</div><div class="lbl">累计服务老人</div></div>
+      <div class="st-card"><div class="num">862</div><div class="lbl">注册志愿者</div></div>
+      <div class="st-card"><div class="num">156</div><div class="lbl">本月订单</div></div>
+      <div class="st-card"><div class="num">8</div><div class="lbl">待审核</div></div>
+    </div>
+
+    <div class="sec-tabs">
+      <button class="active" onclick="switchSec('pending',this)">待审核 (8)</button>
+      <button onclick="switchSec('orders',this)">订单管理</button>
+      <button onclick="switchSec('users',this)">用户管理</button>
+    </div>
+
+    <div class="sec-content active" id="secPending">
+      <div class="twrap">
+        <table><thead><tr><th>姓名</th><th>手机号</th><th>服务意向</th><th>注册时间</th><th>操作</th></tr></thead>
+        <tbody>
+          <tr><td>张三</td><td>138****1234</td><td>手机教学</td><td>2026-05-06</td><td><button class="act-btn approve" onclick="approve(this)">通过</button> <button class="act-btn reject" onclick="reject(this)">拒绝</button></td></tr>
+          <tr><td>李四</td><td>139****5678</td><td>生活服务</td><td>2026-05-05</td><td><button class="act-btn approve" onclick="approve(this)">通过</button> <button class="act-btn reject" onclick="reject(this)">拒绝</button></td></tr>
+          <tr><td>王五</td><td>137****9012</td><td>健康陪伴</td><td>2026-05-04</td><td><button class="act-btn approve" onclick="approve(this)">通过</button> <button class="act-btn reject" onclick="reject(this)">拒绝</button></td></tr>
+          <tr><td>赵六</td><td>136****3456</td><td>手机教学</td><td>2026-05-04</td><td><button class="act-btn approve" onclick="approve(this)">通过</button> <button class="act-btn reject" onclick="reject(this)">拒绝</button></td></tr>
+          <tr><td>孙七</td><td>135****7890</td><td>家电维修</td><td>2026-05-03</td><td><button class="act-btn approve" onclick="approve(this)">通过</button> <button class="act-btn reject" onclick="reject(this)">拒绝</button></td></tr>
+        </tbody></table>
+      </div>
+    </div>
+
+    <div class="sec-content" id="secOrders">
+      <div class="twrap">
+        <table><thead><tr><th>订单号</th><th>老人</th><th>志愿者</th><th>类型</th><th>状态</th><th>操作</th></tr></thead>
+        <tbody>
+          <tr><td>#20260506001</td><td>张奶奶</td><td>张三</td><td>手机教学</td><td><span class="tag tag-success">进行中</span></td><td><button class="act-btn approve">详情</button></td></tr>
+          <tr><td>#20260504002</td><td>李爷爷</td><td>李四</td><td>家电维修</td><td><span class="tag tag-volunteer">已完成</span></td><td><button class="act-btn approve">详情</button></td></tr>
+          <tr><td>#20260502003</td><td>王奶奶</td><td>王五</td><td>健康陪伴</td><td><span class="tag tag-warning">待确认</span></td><td><button class="act-btn approve">确认</button></td></tr>
+          <tr><td>#20260501004</td><td>赵爷爷</td><td>赵六</td><td>生活服务</td><td><span class="tag tag-success">进行中</span></td><td><button class="act-btn approve">详情</button></td></tr>
+          <tr><td>#20260428005</td><td>刘奶奶</td><td>孙七</td><td>手机教学</td><td><span class="tag tag-volunteer">已完成</span></td><td><button class="act-btn approve">详情</button></td></tr>
+        </tbody></table>
+      </div>
+    </div>
+
+    <div class="sec-content" id="secUsers">
+      <div class="twrap">
+        <table><thead><tr><th>用户</th><th>角色</th><th>手机号</th><th>状态</th><th>注册时间</th><th>操作</th></tr></thead>
+        <tbody>
+          <tr><td>张奶奶</td><td><span class="tag tag-elder">老人</span></td><td>136****1111</td><td><span class="tag tag-success">正常</span></td><td>2026-03-01</td><td><button class="act-btn reject" onclick="showToast('功能开发中')">禁用</button></td></tr>
+          <tr><td>张三</td><td><span class="tag tag-volunteer">志愿者</span></td><td>138****1234</td><td><span class="tag tag-success">正常</span></td><td>2026-05-06</td><td><button class="act-btn reject" onclick="showToast('功能开发中')">禁用</button></td></tr>
+          <tr><td>李四</td><td><span class="tag tag-volunteer">志愿者</span></td><td>139****5678</td><td><span class="tag tag-warning">待审核</span></td><td>2026-05-05</td><td><button class="act-btn approve" onclick="showToast('已通过')">通过</button></td></tr>
+          <tr><td>王五</td><td><span class="tag tag-volunteer">志愿者</span></td><td>137****9012</td><td><span class="tag tag-warning">待审核</span></td><td>2026-05-04</td><td><button class="act-btn approve" onclick="showToast('已通过')">通过</button></td></tr>
+          <tr><td>李爷爷</td><td><span class="tag tag-elder">老人</span></td><td>138****2222</td><td><span class="tag tag-success">正常</span></td><td>2026-02-15</td><td><button class="act-btn reject" onclick="showToast('功能开发中')">禁用</button></td></tr>
+        </tbody></table>
+      </div>
+    </div>
+  </div>
+  <div class="toast"></div>
+  <script src="../assets/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', initTheme);
+
+    function switchSec(sec, btn) {
+      document.querySelectorAll('.sec-tabs button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.sec-content').forEach(el => el.classList.remove('active'));
+      document.getElementById('sec' + sec.charAt(0).toUpperCase() + sec.slice(1)).classList.add('active');
+    }
+
+    function approve(btn) {
+      btn.closest('tr').querySelectorAll('.act-btn').forEach(b => b.disabled = true);
+      btn.textContent = '✅ 已通过'; showToast('已通过审核','success');
+    }
+    function reject(btn) {
+      btn.closest('tr').querySelectorAll('.act-btn').forEach(b => b.disabled = true);
+      btn.textContent = '❌ 已拒绝'; showToast('已拒绝该用户','error');
+    }
+  </script>
+</body>
+</html>

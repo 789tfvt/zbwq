@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>服务管理 · 智伴晚晴</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+  <style>
+    .title-header { text-align:center; padding:20px 0; }
+    .title-header h1 { font-size:28px; color:var(--volunteer); }
+    .tabs { display:flex; margin-bottom:24px; border-radius:var(--radius-sm); overflow:hidden; border:2px solid var(--border); }
+    .tabs button { flex:1; padding:12px; font-size:15px; font-weight:600; font-family:var(--font); border:none; cursor:pointer; background:var(--bg); color:var(--text-secondary); transition:var(--transition); }
+    .tabs button.active { background:var(--volunteer); color:#fff; }
+    .order-card { background:var(--bg-card); border-radius:var(--radius); padding:20px 24px; box-shadow:var(--shadow); border:1px solid var(--border); margin-bottom:16px; transition:var(--transition); }
+    .order-card:hover { box-shadow:var(--shadow-hover); }
+    .order-card .top { display:flex; justify-content:space-between; align-items:start; margin-bottom:8px; }
+    .order-card h4 { font-size:18px; font-weight:600; }
+    .order-card .meta { display:flex; gap:16px; font-size:14px; color:var(--text-secondary); flex-wrap:wrap; }
+    .order-card .progress { margin-top:12px; }
+    .pbar { height:6px; background:var(--border); border-radius:3px; overflow:hidden; }
+    .pbar .fill { height:100%; border-radius:3px; background:var(--volunteer); transition:width 1s ease; }
+    .plabel { font-size:13px; color:var(--text-secondary); margin-top:4px; }
+    .stars { color:#FFB800; font-size:14px; }
+    .tab-content { display:none; }
+    .tab-content.active { display:block; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <ul class="nav-list">
+      <li class="nav-item"><a href="dashboard.html">首页</a></li>
+      <li class="nav-item"><a href="demand.html">需求大厅</a></li>
+      <li class="nav-item"><a href="services.html" class="active">服务管理</a></li>
+      <li class="nav-item"><a href="guide.html">志愿者指南</a></li>
+    </ul>
+  </nav>
+  <div class="container">
+    <div class="title-header"><h1>🕐 服务管理</h1></div>
+    <div class="tabs">
+      <button class="active" onclick="switchTab('ongoing',this)">进行中 (2)</button>
+      <button onclick="switchTab('history',this)">已完成 (5)</button>
+    </div>
+
+    <div class="tab-content active" id="tabOngoing">
+      <div class="order-card">
+        <div class="top"><h4>张奶奶 · 手机教学</h4><span class="tag tag-success">进行中</span></div>
+        <div class="meta"><span>📍 北京市海淀区</span><span>📅 2026-05-06 14:00</span></div>
+        <div class="progress"><div class="pbar"><div class="fill" style="width:60%"></div></div><div class="plabel">已服务 36分钟 / 预计60分钟</div></div>
+      </div>
+      <div class="order-card">
+        <div class="top"><h4>李爷爷 · 家电维修</h4><span class="tag tag-success">进行中</span></div>
+        <div class="meta"><span>📍 上海市浦东新区</span><span>📅 2026-05-07 10:00</span></div>
+        <div class="progress"><div class="pbar"><div class="fill" style="width:10%"></div></div><div class="plabel">待开始</div></div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tabHistory">
+      <div class="order-card">
+        <div class="top"><h4>王奶奶 · 健康陪伴</h4><span class="tag tag-volunteer">已完成</span></div>
+        <div class="meta"><span>📍 广东省深圳市</span><span>📅 2026-05-04</span></div>
+        <p style="font-size:14px;"><span class="stars">⭐⭐⭐⭐⭐</span> 非常满意，小王很有耐心</p>
+      </div>
+      <div class="order-card">
+        <div class="top"><h4>赵爷爷 · 生活服务</h4><span class="tag tag-volunteer">已完成</span></div>
+        <div class="meta"><span>📍 杭州市西湖区</span><span>📅 2026-05-02</span></div>
+        <p style="font-size:14px;"><span class="stars">⭐⭐⭐⭐⭐</span> 非常感谢志愿者的帮助</p>
+      </div>
+      <div class="order-card">
+        <div class="top"><h4>刘奶奶 · 手机教学</h4><span class="tag tag-volunteer">已完成</span></div>
+        <div class="meta"><span>📍 北京市朝阳区</span><span>📅 2026-04-28</span></div>
+        <p style="font-size:14px;"><span class="stars">⭐⭐⭐⭐</span> 学会了微信视频，太开心了</p>
+      </div>
+      <div class="order-card">
+        <div class="top"><h4>陈爷爷 · 家电维修</h4><span class="tag tag-volunteer">已完成</span></div>
+        <div class="meta"><span>📍 江苏省南京市</span><span>📅 2026-04-25</span></div>
+        <p style="font-size:14px;"><span class="stars">⭐⭐⭐⭐⭐</span> 小伙子技术很好，收费合理</p>
+      </div>
+      <div class="order-card">
+        <div class="top"><h4>周奶奶 · 健康陪伴</h4><span class="tag tag-volunteer">已完成</span></div>
+        <div class="meta"><span>📍 上海市静安区</span><span>📅 2026-04-20</span></div>
+        <p style="font-size:14px;"><span class="stars">⭐⭐⭐⭐</span> 聊得很开心，下次还找她</p>
+      </div>
+    </div>
+  </div>
+  <div class="toast"></div>
+  <script src="../assets/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', initTheme);
+    function switchTab(t, btn) {
+      document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1)).classList.add('active');
+    }
+  </script>
+</body>
+</html>

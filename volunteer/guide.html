@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>志愿者指南 · 智伴晚晴</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <style>
+    .title-header { display:flex; align-items:center; justify-content:center; gap:16px; padding:20px 0; flex-wrap:wrap; }
+    .title-header h1 { font-size:28px; color:var(--volunteer); }
+    .layout { display:flex; gap:24px; flex-wrap:wrap; }
+    .sidebar { flex:1; min-width:200px; max-width:260px; }
+    .content { flex:3; min-width:300px; }
+    .sidnav { background:var(--bg-card); border-radius:var(--radius); padding:20px; box-shadow:var(--shadow); border:1px solid var(--border); position:sticky; top:80px; }
+    .sidnav h4 { font-size:16px; font-weight:600; margin-bottom:12px; color:var(--volunteer); }
+    .sidnav a { display:block; padding:10px 0; font-size:14px; color:var(--text-secondary); cursor:pointer; border-bottom:1px solid var(--border); transition:var(--transition); }
+    .sidnav a:last-child { border-bottom:none; }
+    .sidnav a:hover { color:var(--volunteer); padding-left:4px; text-decoration:none; }
+    .sec { background:var(--bg-card); border-radius:var(--radius); padding:28px; box-shadow:var(--shadow); border:1px solid var(--border); margin-bottom:24px; }
+    .sec h2 { font-size:22px; font-weight:700; color:var(--volunteer); margin-bottom:16px; }
+    .sec h3 { font-size:18px; font-weight:600; margin:20px 0 10px; }
+    .sec p,.sec li { font-size:15px; line-height:1.8; color:var(--text-secondary); }
+    .sec ul { padding-left:20px; }
+    .sec .tip-box { background:var(--volunteer-light); padding:16px; border-radius:var(--radius-sm); margin:16px 0; font-size:14px; border-left:4px solid var(--volunteer); }
+    @media (max-width:768px) { .sidebar { display:none; } }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <ul class="nav-list">
+      <li class="nav-item"><a href="dashboard.html">首页</a></li>
+      <li class="nav-item"><a href="demand.html">需求大厅</a></li>
+      <li class="nav-item"><a href="services.html">服务管理</a></li>
+      <li class="nav-item"><a href="guide.html" class="active">志愿者指南</a></li>
+    </ul>
+  </nav>
+  <div class="container">
+    <div class="title-header">
+      <h1>📖 志愿者指南</h1>
+      <button class="btn btn-volunteer btn-sm" onclick="exportPDF()">📥 导出PDF</button>
+    </div>
+    <div class="layout">
+      <div class="sidebar">
+        <div class="sidnav">
+          <h4>📑 目录</h4>
+          <a onclick="scrollTo('s1')">一、服务规范</a>
+          <a onclick="scrollTo('s2')">二、沟通技巧</a>
+          <a onclick="scrollTo('s3')">三、安全须知</a>
+          <a onclick="scrollTo('s4')">四、常见问题</a>
+          <a onclick="scrollTo('s5')">五、方言速成</a>
+        </div>
+      </div>
+      <div class="content" id="exportContent">
+        <div class="sec" id="s1">
+          <h2>一、服务规范</h2>
+          <ul>
+            <li><strong>准时守约</strong> — 提前5分钟到达服务地点，如有变动提前2小时通知</li>
+            <li><strong>着装得体</strong> — 穿着智伴晚晴志愿者马甲，佩戴工作牌</li>
+            <li><strong>尊重老人</strong> — 耐心倾听，不打断，不使用让老人不适的语言</li>
+            <li><strong>保护隐私</strong> — 不泄露老人的个人信息和家庭情况</li>
+            <li><strong>记录反馈</strong> — 服务完成后及时在系统提交服务记录</li>
+          </ul>
+          <div class="tip-box">💡 首次服务建议邀请有经验的志愿者陪同，熟悉流程后再独立服务。</div>
+        </div>
+        <div class="sec" id="s2">
+          <h2>二、沟通技巧</h2>
+          <ul>
+            <li><strong>语速放慢</strong> — 每分钟100-120字为宜，吐字清晰</li>
+            <li><strong>音量适中</strong> — 部分老人听力下降，可适当提高音量但不失礼貌</li>
+            <li><strong>眼神交流</strong> — 说话时注视老人，微笑点头表示理解</li>
+            <li><strong>耐心重复</strong> — 老人没听清时，换一种说法重新解释</li>
+            <li><strong>多鼓励少否定</strong> — "您说得对，同时我们可以试试..."</li>
+          </ul>
+          <h3>手机教学口诀</h3>
+          <p>"一看二点三滑动，按错了别害怕，点返回就能撤销"</p>
+        </div>
+        <div class="sec" id="s3">
+          <h2>三、安全须知</h2>
+          <ul>
+            <li><strong>人身安全</strong> — 服务时注意自身安全，遇突发情况及时联系平台</li>
+            <li><strong>财产安全</strong> — 不替老人保管现金、银行卡、证件等重要物品</li>
+            <li><strong>信息安全</strong> — 不随意使用老人手机下载不明APP</li>
+            <li><strong>紧急联系</strong> — 确保手机电量充足，保存平台紧急联系方式</li>
+            <li><strong>健康防护</strong> — 服务时佩戴口罩，勤洗手，如有不适及时取消</li>
+          </ul>
+        </div>
+        <div class="sec" id="s4">
+          <h2>四、常见问题</h2>
+          <h3>老人不会用智能手机怎么办？</h3>
+          <p>先从最基础的操作教起：开关机、接打电话、打开微信。每次只教一个功能，重复练习。可配合纸质操作步骤图。</p>
+          <h3>老人听力不好如何沟通？</h3>
+          <p>面对老人说话，放慢语速，适当提高音量。可配合手势和文字辅助。如果老人佩戴助听器，请靠近助听器一侧说话。</p>
+          <h3>服务中老人情绪低落怎么办？</h3>
+          <p>耐心倾听，表示理解。可以转移话题聊聊老人的兴趣爱好。如情绪持续低落，可联系平台心理支持热线。</p>
+          <div class="tip-box">📞 平台支持热线：400-000-0000（工作日 9:00-18:00）</div>
+        </div>
+        <div class="sec" id="s5">
+          <h2>五、常用方言速成</h2>
+          <ul>
+            <li><strong>普通话</strong> — "您好，我是智伴晚晴的志愿者"</li>
+            <li><strong>粤语</strong> — "你好，我係智伴晚晴嘅志願者"</li>
+            <li><strong>上海话</strong> — "侬好，我是智伴晚晴个志愿者"</li>
+            <li><strong>四川话</strong> — "你好，我是智伴晚晴嘞志愿者"</li>
+            <li><strong>闽南语</strong> — "汝好，我是智伴晚晴欸志愿者"</li>
+          </ul>
+          <div class="tip-box">🤖 平台已接入百度语音识别，支持普通话和粤语识别，更多方言持续接入中。</div>
+        </div>
+        <div class="text-center" style="color:var(--text-muted);font-size:14px;padding:20px;">— 持续更新中，感谢每一位志愿者的付出 —</div>
+      </div>
+    </div>
+  </div>
+  <div class="toast"></div>
+  <script src="../assets/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', initTheme);
+    function scrollTo(id) { document.getElementById(id).scrollIntoView({behavior:'smooth'}); }
+
+    async function exportPDF() {
+      showToast('正在生成PDF...','success');
+      try {
+        const el = document.getElementById('exportContent');
+        const cv = await html2canvas(el, { scale:2, useCORS:true, backgroundColor:'#ffffff', logging:false });
+        const imgData = cv.toDataURL('image/png');
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p','mm','a4');
+        const pw = pdf.internal.pageSize.getWidth();
+        const ph = (cv.height * pw) / cv.width;
+        pdf.addImage(imgData, 'PNG', 0, 0, pw, ph);
+        pdf.save('智伴晚晴_志愿者指南.pdf');
+        showToast('✅ PDF已导出','success');
+      } catch(e) { showToast('导出失败：' + e.message,'error'); }
+    }
+  </script>
+</body>
+</html>

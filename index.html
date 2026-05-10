@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>智伴晚晴 · 青年助老驿站</title>
+  <link rel="stylesheet" href="assets/style.css" />
+  <style>
+    .home-bg {
+      position: fixed; inset: 0;
+      background: url('img/bg10.png') center/cover no-repeat fixed; z-index: -1;
+    }
+    .home-bg::after {
+      content: ''; position: absolute; inset: 0;
+      background: rgba(250,248,245,0.75); backdrop-filter: blur(3px);
+    }
+    [data-theme="dark"] .home-bg::after { background: rgba(26,29,33,0.82); }
+
+    .home-wrap {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      padding: 80px 20px 40px;
+    }
+    .home-card {
+      background: var(--bg-card); border-radius: 28px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+      padding: 48px 40px; max-width: 800px; width: 100%; text-align: center;
+      animation: fadeInUp 0.8s ease forwards; border: 1px solid var(--border);
+    }
+    .home-logo { font-size: 44px; font-weight: 800; letter-spacing: -1px; line-height: 1.2; margin-bottom: 4px; }
+    .home-logo .highlight {
+      background: linear-gradient(135deg, var(--primary), var(--volunteer));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .home-sub { font-size: 16px; color: var(--text-secondary); margin-bottom: 4px; transition: opacity 0.3s; min-height: 28px; }
+    .home-clock {
+      display: inline-block; background: var(--primary-light); color: var(--primary);
+      font-size: 15px; font-weight: 600; padding: 6px 20px; border-radius: var(--radius-full);
+      margin: 12px 0 28px;
+    }
+    .role-cards { display: flex; gap: 16px; margin-bottom: 28px; }
+    @media (max-width: 576px) {
+      .home-card { padding: 32px 20px; }
+      .role-cards { flex-direction: column; }
+      .home-logo { font-size: 32px; }
+    }
+    .home-footer { font-size: 13px; color: var(--text-muted); margin-top: 20px; }
+
+    /* Entrance stagger */
+    .role-card { opacity: 0; animation: fadeInUp 0.6s ease forwards; }
+    .role-card:nth-child(1) { animation-delay: 0.2s; }
+    .role-card:nth-child(2) { animation-delay: 0.35s; }
+    .role-card:nth-child(3) { animation-delay: 0.5s; }
+  </style>
+</head>
+<body>
+  <div class="home-bg"></div>
+  <button class="theme-btn" onclick="toggleTheme()" title="切换深浅色模式">🌓</button>
+
+  <div class="home-wrap">
+    <div class="home-card">
+      <div class="home-sub" id="slogan">用青春的双手，托起长辈的数字晴空</div>
+      <h1 class="home-logo">智伴晚晴<br/><span class="highlight">青年助老驿站</span></h1>
+      <div class="home-clock" id="currentTime">--</div>
+
+      <div class="role-cards">
+        <div class="role-card elder" onclick="goTo('elder/login.html')">
+          <div class="icon">📍</div>
+          <h3>我是老人</h3>
+          <p>发布需求、查看服务<br/>学习教程、AI语音陪伴</p>
+          <button class="btn btn-elder btn-sm mt-8">快捷验证 →</button>
+        </div>
+        <div class="role-card volunteer" onclick="goTo('volunteer/login.html')">
+          <div class="icon">❤️</div>
+          <h3>我是志愿者</h3>
+          <p>接单服务、管理订单<br/>上传教程、参与培训</p>
+          <button class="btn btn-volunteer btn-sm mt-8">登录/注册 →</button>
+        </div>
+        <div class="role-card admin" onclick="goTo('admin/login.html')">
+          <div class="icon">⚙️</div>
+          <h3>我是管理员</h3>
+          <p>用户审核、订单管理<br/>数据统计、内容管控</p>
+          <button class="btn btn-admin btn-sm mt-8">后台登录 →</button>
+        </div>
+      </div>
+
+      <button class="voice-btn-lg" id="voiceBtn">🎤 说出您的身份</button>
+      <div class="voice-status" id="voiceStatus">支持语音识别：请说"我是老人"、"我是志愿者"或"我是管理员"</div>
+      <div class="home-footer">© 2026 智伴晚晴 · 响应十五五规划 · AI赋能助老</div>
+    </div>
+  </div>
+
+  <div class="toast"></div>
+  <script src="assets/app.js"></script>
+  <script>
+    const slogans = [
+      "用青春的双手，托起长辈的数字晴空",
+      "青春暖夕阳，志愿伴安康",
+      "以青春之名，赴温暖之约",
+      "银发需呵护，青春来相助",
+      "青春力量护桑榆，志愿真情暖人心"
+    ];
+    let si = 0;
+    function rotateSlogan() {
+      const el = document.getElementById('slogan');
+      si = (si + 1) % slogans.length;
+      el.style.opacity = 0;
+      setTimeout(() => { el.textContent = slogans[si]; el.style.opacity = 1; }, 300);
+    }
+
+    async function startVoiceRecognition() {
+      const btn = document.getElementById('voiceBtn');
+      const status = document.getElementById('voiceStatus');
+      if (btn.classList.contains('recording')) return;
+      if (!navigator.mediaDevices || !MediaRecorder) {
+        status.textContent = '❌ 您的设备不支持语音录制';
+        status.className = 'voice-status error'; speak('您的设备不支持语音录制'); return;
+      }
+      btn.textContent = '🎙️ 正在录音...';
+      btn.classList.add('recording');
+      status.textContent = '请说出您的身份（5秒）...';
+      status.className = 'voice-status recording';
+      speak('请说出您的身份，我正在录音');
+      try {
+        const { stop } = await captureAudio();
+        setTimeout(async () => {
+          try {
+            status.textContent = '正在处理音频...';
+            const audioBase64 = await stop();
+            btn.classList.remove('recording'); btn.classList.add('recognizing');
+            status.textContent = '正在识别...'; status.className = 'voice-status recognizing';
+            const transcript = await recognizeWithBaidu(audioBase64);
+            status.textContent = `✅ 识别结果："${transcript}"`;
+            status.className = 'voice-status success'; btn.textContent = '✅ 识别成功';
+            if (transcript.includes('老人')) { speak('已识别为老人，正在跳转'); setTimeout(() => goTo('elder/login.html'), 1200); }
+            else if (transcript.includes('志愿者') || transcript.includes('志愿')) { speak('已识别为志愿者，正在跳转'); setTimeout(() => goTo('volunteer/login.html'), 1200); }
+            else if (transcript.includes('管理员') || transcript.includes('管理')) { speak('已识别为管理员，正在跳转'); setTimeout(() => goTo('admin/login.html'), 1200); }
+            else { throw new Error('未识别到有效身份'); }
+          } catch(e) {
+            btn.classList.remove('recording','recognizing'); btn.textContent = '🎤 再次说话';
+            status.textContent = '❌ ' + e.message; status.className = 'voice-status error'; speak(e.message);
+          }
+        }, 5000);
+      } catch(e) {
+        btn.classList.remove('recording','recognizing'); btn.textContent = '🎤 录音失败';
+        let msg = e.message || '无法启动音频源';
+        if (msg.includes('denied') || msg.includes('not allowed')) msg = '麦克风权限被拒绝';
+        status.textContent = '❌ ' + msg; status.className = 'voice-status error'; speak(msg);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme(); startClock();
+      document.getElementById('voiceBtn').addEventListener('click', startVoiceRecognition);
+      setInterval(rotateSlogan, 5000);
+      setTimeout(() => speak('欢迎来到智伴晚晴青年助老驿站，请选择或说出您的身份'), 800);
+    });
+  </script>
+</body>
+</html>

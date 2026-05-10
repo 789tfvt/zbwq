@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>老人服务 · 智伴晚晴</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+  <style>
+    .elder-header {
+      background: linear-gradient(135deg, var(--elder), var(--elder-dark));
+      color:#fff; text-align:center; padding:100px 20px 40px; margin:-20px -20px 0; border-radius:0 0 32px 32px;
+    }
+    .elder-header h1 { font-size:28px; font-weight:700; }
+    .elder-header p { font-size:16px; opacity:0.9; margin-top:4px; }
+    .elder-content { padding:24px 0; max-width:640px; margin:0 auto; }
+    .serv-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    @media (max-width:400px) { .serv-grid { grid-template-columns:1fr; } }
+    .serv-item {
+      background:var(--bg-card); border-radius:var(--radius); padding:24px 16px;
+      text-align:center; cursor:pointer; border:2px solid var(--border);
+      transition:var(--transition);
+    }
+    .serv-item:hover { border-color:var(--elder); transform:translateY(-3px); box-shadow:var(--shadow-hover); }
+    .serv-item .icon { font-size:36px; margin-bottom:8px; }
+    .serv-item h4 { font-size:18px; font-weight:600; }
+    .serv-item p { font-size:14px; color:var(--text-secondary); margin-top:4px; }
+
+    .ai-float-btn {
+      position:fixed; bottom:40px; right:30px; width:64px; height:64px;
+      border-radius:50%; background:var(--elder); color:#fff; border:none;
+      font-size:28px; cursor:pointer; z-index:9998;
+      box-shadow:0 4px 20px rgba(232,145,90,0.4); transition:var(--transition);
+    }
+    .ai-float-btn:hover { transform:scale(1.1); }
+    .ai-panel {
+      position:fixed; top:50%; right:-380px; transform:translateY(-50%);
+      width:360px; max-width:90vw; background:var(--bg-card);
+      border-radius:20px 0 0 20px; box-shadow:-8px 0 30px rgba(0,0,0,0.12);
+      padding:24px; z-index:9999; transition:right 0.4s ease;
+      display:flex; flex-direction:column; gap:12px;
+    }
+    .ai-panel.show { right:0; }
+    .ai-panel .ai-hdr { display:flex; align-items:center; gap:12px; border-bottom:2px solid var(--elder); padding-bottom:12px; }
+    .ai-panel .ai-avatar { width:48px;height:48px;border-radius:50%;background:var(--elder-light);color:var(--elder);display:flex;align-items:center;justify-content:center;font-size:24px; }
+    .ai-panel .ai-name { font-weight:700; font-size:18px; }
+    .ai-panel .close-ai { margin-left:auto; background:none; border:none; font-size:24px; cursor:pointer; color:var(--text-muted); }
+    .ai-chat { flex:1; min-height:180px; max-height:280px; overflow-y:auto; display:flex; flex-direction:column; gap:10px; padding:4px 0; }
+    .ai-msg,.user-msg { padding:10px 14px; border-radius:12px; font-size:14px; max-width:88%; line-height:1.5; }
+    .ai-msg { background:var(--primary-light); align-self:flex-start; }
+    .user-msg { background:var(--elder-light); align-self:flex-end; }
+    .ai-input-row { display:flex; gap:8px; }
+    .ai-input-row input { flex:1; min-height:44px; font-size:14px; }
+    .ai-input-row button { padding:0 18px; background:var(--elder); color:#fff; border:none; border-radius:var(--radius-sm); cursor:pointer; font-weight:600; }
+
+    .quick-actions { display:flex; gap:12px; margin-bottom:24px; flex-wrap:wrap; }
+    .quick-btn { padding:12px 20px; border-radius:var(--radius-sm); border:2px solid var(--border); background:var(--bg-card); cursor:pointer; font-size:14px; font-weight:500; transition:var(--transition); font-family:var(--font); }
+    .quick-btn:hover { border-color:var(--elder); background:var(--elder-light); }
+
+    .order-chip {
+      display:flex; align-items:center; gap:12px; padding:14px 18px;
+      background:var(--bg-card); border-radius:var(--radius-sm);
+      border:1px solid var(--border); margin-bottom:12px;
+    }
+    .order-chip .badge-status { width:8px;height:8px;border-radius:50%;flex-shrink:0; }
+    .order-chip .badge-status.doing { background:var(--elder); }
+    .order-chip .badge-status.done { background:var(--volunteer); }
+    .order-chip .info { flex:1; font-size:14px; }
+    .order-chip .info .name { font-weight:600; }
+    .order-chip .info .time { font-size:13px; color:var(--text-secondary); }
+    .order-chip .tag-sm { font-size:12px; padding:2px 10px; border-radius:var(--radius-full); }
+  </style>
+</head>
+<body>
+  <button class="back-btn" onclick="goTo('../index.html')">←</button>
+
+  <div class="elder-header">
+    <h1>🏡 智伴晚晴 · 老人服务</h1>
+    <p id="greeting">欢迎回来！今天需要什么帮助？</p>
+  </div>
+
+  <div class="elder-content container">
+    <!-- 快捷按钮 -->
+    <div class="quick-actions">
+      <button class="quick-btn" onclick="callVolunteer()">📞 呼叫志愿者</button>
+      <button class="quick-btn" onclick="bookLesson()">📱 预约教学</button>
+      <button class="quick-btn" onclick="openAI()">🔊 语音帮助</button>
+    </div>
+
+    <!-- 服务网格 -->
+    <h2 class="section-title">📋 常用服务</h2>
+    <div class="serv-grid">
+      <div class="serv-item" onclick="openService('phone')"><div class="icon">📱</div><h4>手机教学</h4><p>学习使用智能手机</p></div>
+      <div class="serv-item" onclick="openService('life')"><div class="icon">🛵</div><h4>生活服务</h4><p>代购、陪同办事</p></div>
+      <div class="serv-item" onclick="openService('repair')"><div class="icon">🔧</div><h4>家电维修</h4><p>小家电故障报修</p></div>
+      <div class="serv-item" onclick="openService('health')"><div class="icon">💬</div><h4>健康陪伴</h4><p>聊天、读书、散步</p></div>
+      <div class="serv-item" onclick="openService('emergency')"><div class="icon">🚨</div><h4>紧急求助</h4><p>一键呼叫帮助</p></div>
+      <div class="serv-item" onclick="openService('policy')"><div class="icon">📋</div><h4>政策咨询</h4><p>养老政策解读</p></div>
+    </div>
+
+    <!-- 最近服务 -->
+    <h2 class="section-title mt-24">🕐 最近服务</h2>
+    <div id="recentOrders">
+      <div class="order-chip">
+        <span class="badge-status doing"></span>
+        <div class="info"><div class="name">📱 手机教学 · 张志愿者</div><div class="time">今天 14:00 · 进行中</div></div>
+        <span class="tag-sm tag tag-success">进行中</span>
+      </div>
+      <div class="order-chip">
+        <span class="badge-status done"></span>
+        <div class="info"><div class="name">💬 健康陪伴 · 李志愿者</div><div class="time">2026-05-04 · 已完成</div></div>
+        <span class="tag-sm tag tag-volunteer">已完成</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI -->
+  <button class="ai-float-btn" id="aiFloatBtn" onclick="toggleAI()">🤖</button>
+  <div class="ai-panel" id="aiPanel">
+    <div class="ai-hdr">
+      <div class="ai-avatar">🤖</div>
+      <div><div class="ai-name">小晚 · AI助手</div></div>
+      <button class="close-ai" onclick="toggleAI()">✕</button>
+    </div>
+    <div class="ai-chat" id="aiChat">
+      <div class="ai-msg">您好！我是小晚，有什么可以帮您的？</div>
+    </div>
+    <div class="ai-input-row">
+      <input type="text" id="aiInput" placeholder="输入问题..." onkeydown="if(event.key==='Enter')sendAI()" />
+      <button onclick="sendAI()">发送</button>
+    </div>
+  </div>
+
+  <div class="toast"></div>
+  <script src="../assets/app.js"></script>
+  <script>
+    const services = {
+      phone:  { name:'手机教学', icon:'📱', desc:'志愿者上门教您使用智能手机，包括微信视频、手机支付、挂号预约、拍照分享等。', fields:'您想学习哪些功能？例如：微信视频通话、手机交水电费' },
+      life:   { name:'生活服务', icon:'🛵', desc:'志愿者为您提供代购物品、陪同就医、办事代办等生活协助。', fields:'请描述您需要什么帮助？例如：去银行取养老金、去超市买菜' },
+      repair: { name:'家电维修', icon:'🔧', desc:'小家电故障报修，志愿者上门查看维修。', fields:'请描述是什么家电、出现了什么问题？' },
+      health: { name:'健康陪伴', icon:'💬', desc:'志愿者陪您聊天、读书、散步，提供精神慰藉。', fields:'您希望什么时间、什么频率的陪伴？' },
+      emergency:{ name:'紧急求助', icon:'🚨', desc:'一键呼叫帮助，我们将优先安排志愿者联系您。', fields:'请描述您的紧急情况，以便我们快速响应。' },
+      policy: { name:'政策咨询', icon:'📋', desc:'了解最新的养老服务政策、补贴申请等信息。', fields:'您想了解哪些政策？例如：高龄补贴、居家养老服务' }
+    };
+
+    const aiReplies = [
+      "好的，我帮您查看一下。您说的这个问题，建议联系志愿者上门协助。",
+      "明白了！已记录您的需求，稍后为您安排合适的志愿者。",
+      "这个问题很简单哦！下次让志愿者当面教您操作一遍。",
+      "收到您的问题了。如果着急的话，可以点击「呼叫志愿者」按钮。",
+      "好的呢！小晚正在查询相关信息，请稍候..."
+    ];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      document.getElementById('greeting').textContent = `${getGreeting()}！今天需要什么帮助？`;
+      document.addEventListener('click', e => {
+        const p = document.getElementById('aiPanel');
+        const b = document.getElementById('aiFloatBtn');
+        if (p.classList.contains('show') && !p.contains(e.target) && e.target !== b) p.classList.remove('show');
+      });
+    });
+
+    function toggleAI() { document.getElementById('aiPanel').classList.toggle('show'); }
+
+    function openAI() {
+      document.getElementById('aiPanel').classList.add('show');
+      speak('小晚随时为您服务');
+    }
+
+    function sendAI() {
+      const input = document.getElementById('aiInput');
+      const text = input.value.trim();
+      if (!text) return;
+      const chat = document.getElementById('aiChat');
+      chat.innerHTML += `<div class="user-msg">${text}</div>`;
+      input.value = '';
+      setTimeout(() => {
+        const reply = aiReplies[Math.floor(Math.random() * aiReplies.length)];
+        chat.innerHTML += `<div class="ai-msg">${reply}</div>`;
+        chat.scrollTop = chat.scrollHeight;
+      }, 600 + Math.random() * 400);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    // 呼叫志愿者
+    function callVolunteer() {
+      openModal(`
+        <h3>📞 呼叫志愿者</h3>
+        <p>确认呼叫志愿者？平台将为您匹配附近的空闲志愿者，请保持手机畅通。</p>
+        <div class="form-group" style="margin-bottom:16px;"><label>备注（可选）</label><input type="text" id="callNote" placeholder="例如：需要会说粤语的志愿者" /></div>
+        <div class="modal-actions">
+          <button class="btn btn-elder btn-sm" onclick="confirmCall()">确认呼叫</button>
+          <button class="btn btn-outline btn-sm" onclick="closeModal()">取消</button>
+        </div>
+      `);
+    }
+    function confirmCall() {
+      closeModal();
+      showToast('📞 已通知志愿者，请保持手机畅通','success');
+      speak('已通知志愿者，请保持手机畅通');
+    }
+
+    // 预约教学
+    function bookLesson() {
+      openModal(`
+        <h3>📱 手机教学预约</h3>
+        <p>请选择您想学习的手机功能：</p>
+        <div class="form-group" style="margin-bottom:12px;">
+          <select id="lessonTopic"><option>微信视频通话</option><option>手机支付</option><option>医院挂号预约</option><option>拍照与分享</option><option>抖音/快手</option><option>其他</option></select>
+        </div>
+        <div class="form-group" style="margin-bottom:16px;">
+          <label>方便的时间</label>
+          <select id="lessonTime"><option>今天下午</option><option>明天上午</option><option>明天下午</option><option>本周六</option><option>本周日</option></select>
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-elder btn-sm" onclick="confirmLesson()">提交预约</button>
+          <button class="btn btn-outline btn-sm" onclick="closeModal()">取消</button>
+        </div>
+      `);
+    }
+    function confirmLesson() {
+      const topic = document.getElementById('lessonTopic').value;
+      const time = document.getElementById('lessonTime').value;
+      closeModal();
+      showToast(`✅ 已预约「${topic}」${time}，志愿者将在24小时内联系您`,'success');
+      speak(`已收到您的预约`);
+      // 添加到最近服务
+      const el = document.getElementById('recentOrders');
+      el.innerHTML = `<div class="order-chip"><span class="badge-status doing"></span><div class="info"><div class="name">📱 ${topic}</div><div class="time">${time} · 等待确认</div></div><span class="tag-sm tag tag-warning">待确认</span></div>` + el.innerHTML;
+    }
+
+    // 通用服务申请
+    function openService(type) {
+      const svc = services[type];
+      if (!svc) return;
+      if (type === 'emergency') {
+        openModal(`
+          <h3>🚨 紧急求助</h3>
+          <p style="color:#C62828;font-weight:600;">是否确认发送紧急求助？平台将优先响应。</p>
+          <div class="form-group" style="margin-bottom:16px;"><label>情况描述</label><input type="text" id="emerDesc" placeholder="简单描述您的情况" /></div>
+          <div class="modal-actions">
+            <button class="btn btn-elder btn-sm" onclick="submitService('emergency')">发送求助</button>
+            <button class="btn btn-outline btn-sm" onclick="closeModal()">取消</button>
+          </div>
+        `);
+        return;
+      }
+      openModal(`
+        <h3>${svc.icon} ${svc.name}</h3>
+        <p>${svc.desc}</p>
+        <div class="form-group" style="margin-bottom:16px;">
+          <label>详细说明</label>
+          <input type="text" id="svcDesc" placeholder="${svc.fields}" />
+        </div>
+        <div class="form-group" style="margin-bottom:16px;">
+          <label>联系地址</label>
+          <input type="text" id="svcAddr" placeholder="请输入您的地址" />
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-elder btn-sm" onclick="submitService('${type}')">提交申请</button>
+          <button class="btn btn-outline btn-sm" onclick="closeModal()">取消</button>
+        </div>
+      `);
+    }
+    function submitService(type) {
+      const svc = services[type];
+      closeModal();
+      showToast(`✅ ${svc.name}申请已提交，志愿者将尽快联系您`,'success');
+      speak(`您的${svc.name}申请已提交成功`);
+      // 添加到最近服务
+      const el = document.getElementById('recentOrders');
+      el.innerHTML = `<div class="order-chip"><span class="badge-status doing"></span><div class="info"><div class="name">${svc.icon} ${svc.name}</div><div class="time">刚刚提交 · 等待志愿者接单</div></div><span class="tag-sm tag tag-warning">待接单</span></div>` + el.innerHTML;
+    }
+  </script>
+</body>
+</html>

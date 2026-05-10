@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>志愿者首页 · 智伴晚晴</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+  <style>
+    .banner { height:380px; border-radius:var(--radius); overflow:hidden; position:relative; margin-bottom:32px; }
+    .banner-slides { position:absolute; inset:0; z-index:0; }
+    .slide { position:absolute; inset:0; background-size:cover; background-position:center; opacity:0; transition:opacity 1s ease-in-out; }
+    .slide.active { opacity:1; }
+    .banner-overlay { position:absolute; inset:0; z-index:1; background:linear-gradient(135deg,rgba(0,0,0,0.55) 0%,rgba(0,0,0,0.2) 100%); display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; color:#fff; padding:20px; }
+    .banner-overlay h1 { font-size:36px; font-weight:700; margin-bottom:12px; text-shadow:0 2px 8px rgba(0,0,0,0.3); }
+    .banner-overlay p { font-size:18px; max-width:80%; opacity:0.95; transition:opacity 0.5s; min-height:28px; }
+    .dash-grid { display:flex; gap:24px; flex-wrap:wrap; align-items:flex-start; }
+    .dash-main { flex:2; min-width:300px; }
+    .dash-side { flex:1; min-width:280px; }
+    .feat-card { background:var(--bg-card); border-radius:var(--radius); padding:24px; box-shadow:var(--shadow); cursor:pointer; transition:var(--transition); border:1px solid var(--border); position:relative; overflow:hidden; }
+    .feat-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-hover); }
+    .feat-card::before { content:''; position:absolute; top:0; left:0; width:4px; height:100%; background:var(--volunteer); }
+    .feat-card .icon { font-size:28px; margin-bottom:8px; }
+    .feat-card h4 { font-size:17px; font-weight:600; }
+    .feat-card p { font-size:14px; color:var(--text-secondary); margin-top:4px; }
+    .feat-card .badge { position:absolute; top:16px; right:16px; background:var(--elder); color:#fff; font-size:12px; font-weight:700; padding:4px 10px; border-radius:var(--radius-full); }
+    .data-panel { background:var(--bg-card); border-radius:var(--radius); padding:24px; box-shadow:var(--shadow); border:1px solid var(--border); }
+    .chart-wrap { display:flex; justify-content:center; align-items:center; height:210px; position:relative; margin-top:16px; }
+    .chart-tip { position:absolute; bottom:0; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.85); color:#fff; padding:8px 16px; border-radius:8px; font-size:14px; font-weight:600; opacity:0; transition:opacity 0.2s; pointer-events:none; white-space:nowrap; }
+    #pie-chart { cursor:pointer; }
+    @media (max-width:768px) { .banner { height:200px; } .banner-overlay h1 { font-size:24px; } .banner-overlay p { font-size:15px; } }
+  </style>
+</head>
+<body>
+  <button class="back-btn" onclick="goTo('login.html')">←</button>
+  <nav class="navbar">
+    <ul class="nav-list">
+      <li class="nav-item"><a href="dashboard.html" class="active">首页</a></li>
+      <li class="nav-item"><a href="demand.html">需求大厅</a></li>
+      <li class="nav-item"><a href="services.html">服务管理</a></li>
+      <li class="nav-item"><a href="guide.html">志愿者指南</a></li>
+    </ul>
+  </nav>
+  <div class="container" style="padding-top:20px;">
+    <!-- Banner -->
+    <div class="banner animate-fade">
+      <div class="banner-slides">
+        <div class="slide active" style="background-image:url('../img/bg11.jpg')"></div>
+        <div class="slide" style="background-image:url('../img/bg12.jpg')"></div>
+        <div class="slide" style="background-image:url('../img/bg13.jpg')"></div>
+        <div class="slide" style="background-image:url('../img/bg14.png')"></div>
+        <div class="slide" style="background-image:url('../img/bg15.png')"></div>
+      </div>
+      <div class="banner-overlay">
+        <h1>智伴晚晴 · AI暖夕阳</h1>
+        <p id="slogan">数字化时代，青年为父母辈撑起数字晴空</p>
+      </div>
+    </div>
+
+    <div class="dash-grid">
+      <div class="dash-main">
+        <h2 class="section-title">🚀 快捷入口</h2>
+        <div class="grid-2">
+          <div class="feat-card" onclick="goTo('demand.html')"><div class="badge">12</div><div class="icon">📋</div><h4>需求接单</h4><p>实时查看并响应待处理的老人求助需求</p></div>
+          <div class="feat-card" onclick="goTo('services.html')"><div class="icon">🕐</div><h4>服务记录</h4><p>本月服务时长与服务次数统计</p></div>
+          <div class="feat-card" onclick="showToast('教程上传功能开发中','success')"><div class="icon">📤</div><h4>教程上传</h4><p>分享您制作的适老化操作教程</p></div>
+          <div class="feat-card" onclick="goTo('guide.html')"><div class="icon">🎓</div><h4>培训学习</h4><p>学习服务规范、方言沟通技巧等知识</p></div>
+        </div>
+      </div>
+      <div class="dash-side">
+        <div class="data-panel">
+          <h2 class="section-title" style="font-size:18px;">📊 平台数据</h2>
+          <div class="stat-item"><span class="stat-label">累计服务老人</span><span class="stat-value">1,248 位</span></div>
+          <div class="stat-item"><span class="stat-label">注册志愿者</span><span class="stat-value">862 人</span></div>
+          <div class="stat-item"><span class="stat-label">本月热门</span><span class="stat-value">手机教学 40%</span></div>
+          <div class="chart-wrap">
+            <div class="chart-tip" id="chartTip"></div>
+            <canvas id="pie-chart" width="280" height="180"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer style="text-align:center;color:var(--text-muted);font-size:13px;margin:40px 0 20px;padding-top:20px;border-top:1px solid var(--border);">© 2026 智伴晚晴 · 青年助老驿站</footer>
+  </div>
+  <div class="toast"></div>
+  <script src="../assets/app.js"></script>
+  <script>
+    const slogans = [
+      "青春暖夕阳，志愿伴安康 —— 用年轻的温度，护老人岁月绵长",
+      "志愿红映银发，爱心暖透年华 —— 青年携手，让老人的笑容不掺时差",
+      "以青春之名，赴温暖之约——陪老人唠唠家常，为岁月添份晴朗",
+      "青春力量护桑榆，志愿真情暖人心",
+      "不只是"帮一把"，更是"暖一心"—— 用陪伴点亮老人的日常"
+    ];
+    let si = 0;
+    function nextSlogan() {
+      const el = document.getElementById('slogan');
+      if (!el) return;
+      si = (si + 1) % slogans.length;
+      el.style.opacity = 0;
+      setTimeout(() => { el.textContent = slogans[si]; el.style.opacity = 1; }, 300);
+    }
+
+    let slides = [], cur = 0, timer = null;
+    function initCarousel() {
+      slides = document.querySelectorAll('.slide');
+      if (!slides.length) return;
+      slides.forEach((s,i) => s.classList.toggle('active', i===0));
+      cur = 0;
+      if (timer) clearInterval(timer);
+      timer = setInterval(() => {
+        slides[cur].classList.remove('active');
+        cur = (cur + 1) % slides.length;
+        slides[cur].classList.add('active');
+      }, 3000);
+    }
+
+    const pieData = [
+      { label:'手机教学', value:40, color:'#4CAF7C' },
+      { label:'生活服务', value:25, color:'#5B9BD5' },
+      { label:'家电维修', value:20, color:'#E8915A' },
+      { label:'健康陪伴', value:15, color:'#AB47BC' }
+    ];
+    let selSlice = null;
+    const cvs = document.getElementById('pie-chart'), ctx = cvs.getContext('2d');
+    const cx = cvs.width/2, cy = cvs.height/2, baseR = Math.min(cx,cy)-15, selR = baseR+10;
+
+    function drawPie() {
+      ctx.clearRect(0,0,cvs.width,cvs.height);
+      let start = 0;
+      pieData.forEach(s => {
+        const ang = (s.value/100)*2*Math.PI, r = s===selSlice ? selR : baseR;
+        ctx.fillStyle = s.color; ctx.beginPath(); ctx.moveTo(cx,cy);
+        ctx.arc(cx,cy,r,start,start+ang); ctx.closePath(); ctx.fill();
+        ctx.fillStyle='#fff'; ctx.font='bold 11px Microsoft YaHei';
+        ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillText(s.label, cx+r*0.6*Math.cos(start+ang/2), cy+r*0.6*Math.sin(start+ang/2));
+        s._s=start; s._e=start+ang; start+=ang;
+      });
+    }
+
+    function hitSlice(x,y) {
+      const dx=x-cx, dy=y-cy;
+      if (Math.sqrt(dx*dx+dy*dy) > baseR+12) return null;
+      let a = Math.atan2(dy,dx); if (a<0) a+=2*Math.PI;
+      return pieData.find(s => a>=s._s && a<=s._e);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme(); initCarousel(); nextSlogan(); setInterval(nextSlogan, 5000); drawPie();
+      cvs.addEventListener('click', e => {
+        const r = cvs.getBoundingClientRect();
+        const s = hitSlice(e.clientX-r.left, e.clientY-r.top);
+        if (s) {
+          selSlice = s === selSlice ? null : s; drawPie();
+          const tip = document.getElementById('chartTip');
+          tip.textContent = selSlice ? `${selSlice.label}：${selSlice.value}%` : '';
+          tip.style.opacity = selSlice ? 1 : 0;
+        }
+      });
+    });
+  </script>
+</body>
+</html>

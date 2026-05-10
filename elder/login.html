@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>老人快捷验证 · 智伴晚晴</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+  <style>
+    .verify-wrap { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:80px 20px 40px; }
+    .verify-card { background:var(--bg-card); border-radius:24px; box-shadow:0 20px 60px rgba(0,0,0,0.08); padding:40px 36px; max-width:460px; width:100%; border:1px solid var(--border); animation:fadeInUp 0.6s ease forwards; }
+    .verify-header { text-align:center; margin-bottom:28px; }
+    .verify-header .icon-badge { width:72px;height:72px;border-radius:50%;background:var(--elder-light);color:var(--elder);display:inline-flex;align-items:center;justify-content:center;font-size:34px;margin-bottom:12px; }
+    .verify-header h1 { font-size:26px;font-weight:700; }
+    .verify-header p { color:var(--text-secondary);font-size:15px;margin-top:4px; }
+    .tip-box { background:#FFF8E8;border-left:4px solid var(--elder);padding:14px 18px;border-radius:0 var(--radius-sm) var(--radius-sm) 0;font-size:15px;line-height:1.6;margin-bottom:24px; }
+    [data-theme="dark"] .tip-box { background:#3D2B1A; }
+    .tip-box strong { color:#C9753F; }
+  </style>
+</head>
+<body>
+  <button class="back-btn" onclick="goTo('../index.html')">←</button>
+
+  <div class="verify-wrap">
+    <div class="verify-card">
+      <div class="verify-header">
+        <div class="icon-badge">👴</div>
+        <h1>老人快捷验证</h1>
+        <p>输入手机号，验证后即可使用服务</p>
+      </div>
+
+      <div class="tip-box">
+        📌 请输入手机号接收验证码<br/>
+        <strong>仅用于联系您，信息严格保密</strong>
+      </div>
+
+      <div class="form-group">
+        <label>手机号码</label>
+        <div class="input-with-voice">
+          <input type="tel" id="phone" placeholder="请输入11位手机号" maxlength="11" autocomplete="tel" />
+          <button class="voice-btn-sm" id="voiceBtn" title="语音输入手机号">🎤</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>短信验证码</label>
+        <div class="captcha-row">
+          <input type="text" id="code" placeholder="6位数字验证码" maxlength="6" inputmode="numeric" />
+          <button class="captcha-btn" id="sendCodeBtn" onclick="handleSendCode()">获取验证码</button>
+        </div>
+      </div>
+
+      <button class="btn btn-elder btn-block btn-lg" id="submitBtn" disabled onclick="handleSubmit()">确认验证</button>
+
+      <div class="text-center mt-16" style="font-size:14px;color:var(--text-muted);">同一设备将自动记忆手机号</div>
+    </div>
+  </div>
+
+  <div class="toast"></div>
+  <script src="../assets/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      const saved = loadData('elderPhone');
+      if (saved) document.getElementById('phone').value = saved;
+      document.getElementById('phone').addEventListener('input', checkForm);
+      document.getElementById('code').addEventListener('input', checkForm);
+      document.getElementById('voiceBtn').addEventListener('click', startVoiceInput);
+      document.getElementById('phone').focus();
+    });
+
+    function checkForm() {
+      const p = document.getElementById('phone').value;
+      const c = document.getElementById('code').value;
+      const ok = /^1[3-9]\d{9}$/.test(p) && /^\d{6}$/.test(c);
+      document.getElementById('submitBtn').disabled = !ok;
+      document.getElementById('sendCodeBtn').disabled = !/^1[3-9]\d{9}$/.test(p);
+    }
+
+    function handleSendCode() {
+      const p = document.getElementById('phone').value;
+      if (!/^1[3-9]\d{9}$/.test(p)) { showToast('请输入正确的手机号','error'); return; }
+      const code = setCaptcha('elder');
+      document.getElementById('code').value = code;
+      checkForm();
+      startCountdown(document.getElementById('sendCodeBtn'));
+      showToast('✅ 验证码已自动填入（演示模式）','success');
+      speak(`您的验证码是${code.split('').join('、')}`);
+    }
+
+    async function startVoiceInput() {
+      const input = document.getElementById('phone');
+      const btn = document.getElementById('voiceBtn');
+      if (btn.classList.contains('recording')) return;
+      if (!navigator.mediaDevices || !MediaRecorder) { showToast('设备不支持语音录制','error'); return; }
+      btn.classList.add('recording'); input.value = ''; checkForm();
+      try {
+        const { stop } = await captureAudio();
+        setTimeout(async () => {
+          try {
+            const ab = await stop(); btn.classList.remove('recording');
+            const t = await recognizeWithBaidu(ab);
+            const d = extractDigits(t); input.value = d; checkForm();
+            if (d.length === 11 && /^1[3-9]/.test(d)) speak(`识别到手机号：${d.replace(/(\d{3})\d{4}(\d{4})/,'$1****$2')}`);
+            else speak(d ? '请检查号码是否正确' : '未识别到号码');
+          } catch(e) { btn.classList.remove('recording'); showToast('识别失败','error'); }
+        }, 5000);
+      } catch(e) { btn.classList.remove('recording'); showToast('录音失败','error'); }
+    }
+
+    function handleSubmit() {
+      const p = document.getElementById('phone').value;
+      const c = document.getElementById('code').value;
+      const stored = getStoredCaptcha('elder');
+      if (!/^1[3-9]\d{9}$/.test(p)) { showToast('请输入正确的手机号','error'); return; }
+      if (!stored) { showToast('请先获取验证码','error'); return; }
+      if (c !== stored) { showToast('验证码错误','error'); return; }
+      saveData('elderPhone', p);
+      showToast('✅ 验证通过，正在进入...','success');
+      speak('验证通过');
+      setTimeout(() => goTo('dashboard.html'), 800);
+    }
+  </script>
+</body>
+</html>
