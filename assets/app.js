@@ -128,10 +128,10 @@ async function recognizeWithBaidu(audioBase64, lang = 'mandarin') {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ audioBase64, language: lang })
   });
-  if (!r.ok) throw new Error('语音识别服务暂不可用');
+  if (!r.ok) throw new Error('语音识别服务暂不可用，请稍后再试');
   const d = await r.json();
   if (d.code === 0) return d.result;
-  throw new Error(d.msg || '识别失败');
+  throw new Error(d.msg || '识别失败，请重试');
 }
 
 // ---- Phone extraction ----

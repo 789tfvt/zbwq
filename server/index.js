@@ -32,7 +32,7 @@ async function getToken() {
 app.post('/api/voice/recognize', async (req, res) => {
   try {
     const { audioBase64, language } = req.body;
-    if (!audioBase64) return res.status(400).json({ code: -1, msg: '音频数据为空' });
+    if (!audioBase64) return res.json({ code: -1, msg: '音频数据为空' });
 
     const dev_pid = language === 'cantonese' ? 1637 : 1537;
     const token = await getToken();
@@ -52,10 +52,10 @@ app.post('/api/voice/recognize', async (req, res) => {
     if (d.err_no === 0 && Array.isArray(d.result) && d.result.length > 0) {
       res.json({ code: 0, msg: '识别成功', result: d.result[0].trim() });
     } else {
-      res.status(500).json({ code: -1, msg: `识别失败：${d.err_msg || '未知错误'}` });
+      res.json({ code: -1, msg: `识别失败：${d.err_msg || '未知错误'}` });
     }
   } catch (e) {
-    res.status(500).json({ code: -1, msg: `服务异常：${e.message}` });
+    res.json({ code: -1, msg: `服务异常：${e.message}` });
   }
 });
 
