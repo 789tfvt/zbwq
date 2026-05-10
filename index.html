@@ -117,9 +117,9 @@
       }
       btn.textContent = '🎙️ 正在录音...';
       btn.classList.add('recording');
-      status.textContent = '请说出您的身份（5秒）...';
+      status.textContent = '请说出您的身份（3秒）...';
       status.className = 'voice-status recording';
-      speak('请说出您的身份，我正在录音');
+      speak('请说出您的身份');
       try {
         const { stop } = await captureAudio();
         setTimeout(async () => {
@@ -131,15 +131,16 @@
             const transcript = await recognizeWithBaidu(audioBase64);
             status.textContent = `✅ 识别结果："${transcript}"`;
             status.className = 'voice-status success'; btn.textContent = '✅ 识别成功';
-            if (transcript.includes('老人')) { speak('已识别为老人，正在跳转'); setTimeout(() => goTo('elder/login.html'), 1200); }
-            else if (transcript.includes('志愿者') || transcript.includes('志愿')) { speak('已识别为志愿者，正在跳转'); setTimeout(() => goTo('volunteer/login.html'), 1200); }
-            else if (transcript.includes('管理员') || transcript.includes('管理')) { speak('已识别为管理员，正在跳转'); setTimeout(() => goTo('admin/login.html'), 1200); }
-            else { throw new Error('未识别到有效身份'); }
+            const t = transcript.trim();
+            if (/老人|老年人|老人家/.test(t)) { speak('已识别为老人，正在跳转'); setTimeout(() => goTo('elder/login.html'), 1200); }
+            else if (/志愿者|志愿|义工/.test(t)) { speak('已识别为志愿者，正在跳转'); setTimeout(() => goTo('volunteer/login.html'), 1200); }
+            else if (/管理员|管理|后台/.test(t)) { speak('已识别为管理员，正在跳转'); setTimeout(() => goTo('admin/login.html'), 1200); }
+            else { throw new Error('未识别到有效身份（听到："' + transcript + '"）'); }
           } catch(e) {
             btn.classList.remove('recording','recognizing'); btn.textContent = '🎤 再次说话';
             status.textContent = '❌ ' + e.message; status.className = 'voice-status error'; speak(e.message);
           }
-        }, 5000);
+        }, 3000);
       } catch(e) {
         btn.classList.remove('recording','recognizing'); btn.textContent = '🎤 录音失败';
         let msg = e.message || '无法启动音频源';
