@@ -2,91 +2,143 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
   <title>智伴晚晴 · 青年助老驿站</title>
   <link rel="stylesheet" href="assets/style.css" />
   <style>
-    .home-bg {
-      position: fixed; inset: 0;
-      background: url('img/bg10.png') center/cover no-repeat fixed; z-index: -1;
-    }
-    .home-bg::after {
-      content: ''; position: absolute; inset: 0;
-      background: rgba(255,248,240,0.80); backdrop-filter: blur(4px);
-    }
-    [data-theme="dark"] .home-bg::after { background: rgba(44,36,32,0.85); }
-
     .home-wrap {
       min-height: 100vh; display: flex; align-items: center; justify-content: center;
-      padding: 80px 20px 40px;
+      padding: 80px 16px 40px; position: relative; z-index: 1;
     }
     .home-card {
-      background: var(--bg-card); border-radius: 6px;
-      box-shadow: 0 8px 40px rgba(61,43,31,0.10);
-      padding: 56px 48px; max-width: 800px; width: 100%; text-align: center;
-      animation: fadeInUp 0.8s ease forwards; border: 3px solid var(--border);
+      background: var(--bg-card);
+      backdrop-filter: blur(24px) saturate(1.5);
+      -webkit-backdrop-filter: blur(24px) saturate(1.5);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-xl);
+      padding: 48px 40px; max-width: 780px; width: 100%; text-align: center;
+      animation: fadeInUp 0.7s ease forwards;
+      border: 1px solid var(--border);
     }
-    .home-logo { font-size: 52px; font-weight: 800; letter-spacing: -1px; line-height: 1.2; margin-bottom: 4px; }
+    .home-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #fff; font-size: 12px; font-weight: 600;
+      padding: 5px 16px; border-radius: var(--radius-full);
+      letter-spacing: 0.5px; text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .home-logo { font-size: 44px; font-weight: 800; letter-spacing: -1px; line-height: 1.2; margin-bottom: 6px; }
     .home-logo .highlight {
-      background: linear-gradient(135deg, var(--primary), var(--elder));
+      background: linear-gradient(135deg, var(--primary), var(--accent));
       -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
     }
-    .home-sub { font-size: 20px; color: var(--text-secondary); margin-bottom: 4px; transition: opacity 0.3s; min-height: 30px; }
+    .home-sub { font-size: 18px; color: var(--text-secondary); margin-bottom: 4px; transition: opacity 0.35s; min-height: 28px; font-weight: 400; }
     .home-clock {
-      display: inline-block; background: var(--primary-light); color: var(--primary);
-      font-size: 17px; font-weight: 700; padding: 10px 24px; border-radius: 4px;
-      margin: 12px 0 28px;
+      display: inline-block;
+      background: var(--bg-glass);
+      color: var(--text-secondary);
+      font-size: 14px; font-weight: 500;
+      padding: 8px 20px; border-radius: var(--radius-full);
+      margin: 10px 0 24px; backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
     }
-    .role-cards { display: flex; gap: 16px; margin-bottom: 28px; }
+    .role-cards { display: flex; gap: var(--space-md); margin-bottom: 24px; }
+    .role-card .btn { margin-top: 4px; }
+
+    .voice-section {
+      background: var(--bg-glass);
+      border-radius: var(--radius);
+      padding: 20px; margin-bottom: 16px;
+      border: 1px dashed var(--border);
+      backdrop-filter: blur(8px);
+    }
+
+    .home-footer { font-size: 13px; color: var(--text-muted); margin-top: 16px; }
+
     @media (max-width: 576px) {
-      .home-card { padding: 28px 20px; }
+      .home-card { padding: 28px 18px; border-radius: var(--radius); }
       .role-cards { flex-direction: column; }
-      .home-logo { font-size: 36px; }
-      .home-sub { font-size: 17px; }
+      .home-logo { font-size: 30px; }
+      .home-sub { font-size: 15px; }
     }
-    .home-footer { font-size: 15px; color: var(--text-muted); margin-top: 20px; }
 
     /* Entrance stagger */
-    .role-card { opacity: 0; animation: fadeInUp 0.6s ease forwards; }
-    .role-card:nth-child(1) { animation-delay: 0.2s; }
-    .role-card:nth-child(2) { animation-delay: 0.35s; }
-    .role-card:nth-child(3) { animation-delay: 0.5s; }
+    .role-card { opacity: 0; animation: fadeInUp 0.5s ease forwards; }
+    .role-card:nth-child(1) { animation-delay: 0.15s; }
+    .role-card:nth-child(2) { animation-delay: 0.3s; }
+    .role-card:nth-child(3) { animation-delay: 0.45s; }
+
+    /* Floating particles background */
+    .home-bg-particles {
+      position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
+    }
+    .particle {
+      position: absolute; border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      opacity: 0.06; animation: float 20s infinite ease-in-out;
+    }
+    .particle:nth-child(1) { width: 300px; height: 300px; top: -10%; left: -5%; animation-duration: 25s; }
+    .particle:nth-child(2) { width: 200px; height: 200px; bottom: -5%; right: -3%; animation-duration: 20s; animation-delay: -5s; }
+    .particle:nth-child(3) { width: 150px; height: 150px; top: 50%; left: 50%; animation-duration: 30s; animation-delay: -10s; }
+    .particle:nth-child(4) { width: 100px; height: 100px; top: 20%; right: 10%; animation-duration: 18s; animation-delay: -3s; }
+    .particle:nth-child(5) { width: 250px; height: 250px; bottom: 20%; left: 10%; animation-duration: 22s; animation-delay: -8s; }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      25% { transform: translate(30px, -40px) scale(1.05); }
+      50% { transform: translate(-20px, -60px) scale(0.95); }
+      75% { transform: translate(40px, 20px) scale(1.02); }
+    }
+
+    [data-theme="dark"] .particle { opacity: 0.08; }
   </style>
 </head>
 <body>
-  <div class="home-bg"></div>
-  <button class="theme-btn" onclick="toggleTheme()" title="切换深浅色模式">🌓</button>
+  <div class="home-bg-particles">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+  </div>
+
+  <button class="theme-btn" onclick="toggleTheme()" title="切换深浅色模式">🌙</button>
 
   <div class="home-wrap">
     <div class="home-card">
+      <div class="home-badge">✦ 响应十五五规划 · AI赋能助老</div>
       <div class="home-sub" id="slogan">用青春的双手，托起长辈的数字晴空</div>
       <h1 class="home-logo">智伴晚晴<br/><span class="highlight">青年助老驿站</span></h1>
       <div class="home-clock" id="currentTime">--</div>
 
       <div class="role-cards">
         <div class="role-card elder" onclick="goTo('elder/login.html')">
-          <div class="icon">📍</div>
-          <h3>我是老人</h3>
-          <p>发布需求、查看服务<br/>学习教程、AI语音陪伴</p>
-          <button class="btn btn-elder btn-sm mt-8">快捷验证 →</button>
+          <div class="icon">👴</div>
+          <h2>我是老人</h2>
+          <p>发布需求·AI陪伴<br/>学习教程·查看服务</p>
+          <button class="btn btn-elder btn-sm">快捷验证 →</button>
         </div>
         <div class="role-card volunteer" onclick="goTo('volunteer/login.html')">
-          <div class="icon">❤️</div>
-          <h3>我是志愿者</h3>
-          <p>接单服务、管理订单<br/>上传教程、参与培训</p>
-          <button class="btn btn-volunteer btn-sm mt-8">登录/注册 →</button>
+          <div class="icon">💚</div>
+          <h2>我是志愿者</h2>
+          <p>接单服务·管理订单<br/>上传教程·参与培训</p>
+          <button class="btn btn-volunteer btn-sm">登录/注册 →</button>
         </div>
         <div class="role-card admin" onclick="goTo('admin/login.html')">
           <div class="icon">⚙️</div>
-          <h3>我是管理员</h3>
-          <p>用户审核、订单管理<br/>数据统计、内容管控</p>
-          <button class="btn btn-admin btn-sm mt-8">后台登录 →</button>
+          <h2>我是管理员</h2>
+          <p>用户审核·订单管理<br/>数据统计·内容管控</p>
+          <button class="btn btn-admin btn-sm">后台登录 →</button>
         </div>
       </div>
 
-      <button class="voice-btn-lg" id="voiceBtn">🎤 说出您的身份</button>
-      <div class="voice-status" id="voiceStatus">支持语音识别：请说"我是老人"、"我是志愿者"或"我是管理员"</div>
-      <div class="home-footer">© 2026 智伴晚晴 · 响应十五五规划 · AI赋能助老</div>
+      <div class="voice-section">
+        <button class="voice-btn-lg" id="voiceBtn">🎤 说出您的身份</button>
+        <div class="voice-status" id="voiceStatus">支持语音识别 — 说"我是老人""我是志愿者"或"我是管理员"</div>
+      </div>
+
+      <div class="home-footer">© 2026 智伴晚晴 · 青年助老驿站</div>
     </div>
   </div>
 
@@ -116,7 +168,7 @@
         status.textContent = '❌ 您的设备不支持语音录制';
         status.className = 'voice-status error'; speak('您的设备不支持语音录制'); return;
       }
-      btn.textContent = '🎙️ 正在录音...';
+      btn.textContent = '🎙️ 录音中...';
       btn.classList.add('recording');
       status.textContent = '请说出您的身份（3秒）...';
       status.className = 'voice-status recording';

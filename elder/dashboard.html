@@ -2,76 +2,93 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
   <title>老人服务 · 智伴晚晴</title>
   <link rel="stylesheet" href="../assets/style.css" />
   <style>
     .elder-header {
-      background: linear-gradient(135deg, var(--elder), var(--elder-dark));
-      color:#fff; text-align:center; padding:100px 24px 48px; margin:-20px -20px 0; border-radius:0 0 6px 6px;
+      background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(217,119,6,0.04));
+      text-align:center; padding:80px 24px 36px; margin:0 -16px 0;
+      border-radius:0 0 var(--radius-lg) var(--radius-lg);
+      border-bottom:1px solid var(--border);
     }
-    .elder-header h1 { font-size:32px; font-weight:700; }
-    .elder-header p { font-size:18px; opacity:0.9; margin-top:4px; }
+    .elder-header h1 { font-size:28px; font-weight:800; color:var(--elder-dark); }
+    .elder-header p { font-size:15px; color:var(--text-secondary); margin-top:4px; }
     .elder-content { padding:24px 0; max-width:640px; margin:0 auto; }
-    .serv-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .serv-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
     @media (max-width:400px) { .serv-grid { grid-template-columns:1fr; } }
     .serv-item {
-      background:var(--bg-card); border-radius:6px; padding:28px 20px;
-      text-align:center; cursor:pointer; border:3px solid var(--border);
-      transition:var(--transition);
+      background:var(--bg-card); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+      border-radius:var(--radius); padding:24px 16px;
+      text-align:center; cursor:pointer;
+      border:1px solid var(--border); transition:var(--transition);
     }
-    .serv-item:hover { border-color:var(--elder); transform:translateY(-3px); box-shadow:var(--shadow-hover); }
-    .serv-item .icon { font-size:40px; margin-bottom:8px; }
-    .serv-item h4 { font-size:20px; font-weight:600; }
-    .serv-item p { font-size:14px; color:var(--text-secondary); margin-top:4px; }
+    .serv-item:hover { border-color:rgba(245,158,11,0.3); transform:translateY(-3px); box-shadow:var(--shadow-lg); }
+    .serv-item .icon { font-size:32px; margin-bottom:6px; display:block; }
+    .serv-item h3 { font-size:17px; font-weight:600; }
+    .serv-item p { font-size:13px; color:var(--text-secondary); margin-top:2px; }
 
     .ai-float-btn {
-      position:fixed; bottom:40px; right:30px; width:68px; height:68px;
-      border-radius:6px; background:var(--elder); color:#fff; border:none;
-      font-size:28px; cursor:pointer; z-index:9998;
-      box-shadow:0 4px 20px rgba(232,145,90,0.4); transition:var(--transition);
+      position:fixed; bottom:32px; right:24px; width:60px; height:60px;
+      border-radius:var(--radius-full);
+      background:linear-gradient(135deg,var(--elder),var(--elder-dark));
+      color:#fff; border:none; font-size:24px; cursor:pointer; z-index:9998;
+      box-shadow:0 6px 24px rgba(245,158,11,0.35); transition:var(--transition);
     }
-    .ai-float-btn:hover { transform:scale(1.1); }
+    .ai-float-btn:hover { transform:scale(1.1) translateY(-2px); box-shadow:0 8px 32px rgba(245,158,11,0.45); }
     .ai-panel {
       position:fixed; top:50%; right:-380px; transform:translateY(-50%);
-      width:360px; max-width:90vw; background:var(--bg-card);
-      border-radius:6px 0 0 6px; box-shadow:-8px 0 30px rgba(61,43,31,0.12);
-      padding:28px; z-index:9999; transition:right 0.4s ease;
-      display:flex; flex-direction:column; gap:12px;
+      width:360px; max-width:90vw;
+      background:var(--bg-card); backdrop-filter:blur(24px) saturate(1.5); -webkit-backdrop-filter:blur(24px) saturate(1.5);
+      border-radius:var(--radius-lg) 0 0 var(--radius-lg);
+      box-shadow:var(--shadow-xl); padding:24px; z-index:9999;
+      transition:right 0.4s cubic-bezier(0.4,0,0.2,1);
+      display:flex; flex-direction:column; gap:12px; border:1px solid var(--border);
     }
     .ai-panel.show { right:0; }
-    .ai-panel .ai-hdr { display:flex; align-items:center; gap:12px; border-bottom:3px solid var(--elder); padding-bottom:12px; }
-    .ai-panel .ai-avatar { width:48px;height:48px;border-radius:50%;background:var(--elder-light);color:var(--elder);display:flex;align-items:center;justify-content:center;font-size:24px; }
-    .ai-panel .ai-name { font-weight:700; font-size:18px; }
-    .ai-panel .close-ai { margin-left:auto; background:none; border:none; font-size:24px; cursor:pointer; color:var(--text-muted); }
-    .ai-chat { flex:1; min-height:180px; max-height:280px; overflow-y:auto; display:flex; flex-direction:column; gap:10px; padding:4px 0; }
-    .ai-msg,.user-msg { padding:10px 14px; border-radius:12px; font-size:14px; max-width:88%; line-height:1.5; }
-    .ai-msg { background:var(--primary-light); align-self:flex-start; }
-    .user-msg { background:var(--elder-light); align-self:flex-end; }
+    .ai-panel .ai-hdr { display:flex; align-items:center; gap:10px; border-bottom:1px solid var(--border); padding-bottom:12px; }
+    .ai-panel .ai-avatar { width:42px;height:42px;border-radius:50%;background:rgba(245,158,11,0.1);color:var(--elder);display:flex;align-items:center;justify-content:center;font-size:20px; }
+    .ai-panel .ai-name { font-weight:700; font-size:16px; }
+    .ai-panel .close-ai { margin-left:auto; background:none; border:none; font-size:20px; cursor:pointer; color:var(--text-muted); }
+    .ai-chat { flex:1; min-height:160px; max-height:260px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; padding:4px 0; }
+    .ai-msg,.user-msg { padding:10px 14px; border-radius:var(--radius-sm); font-size:14px; max-width:88%; line-height:1.5; }
+    .ai-msg { background:rgba(37,99,235,0.06); align-self:flex-start; }
+    .user-msg { background:rgba(245,158,11,0.08); align-self:flex-end; }
     .ai-input-row { display:flex; gap:8px; }
-    .ai-input-row input { flex:1; min-height:44px; font-size:14px; }
-    .ai-input-row button { padding:0 18px; background:var(--elder); color:#fff; border:none; border-radius:var(--radius-sm); cursor:pointer; font-weight:600; }
+    .ai-input-row input { flex:1; min-height:42px; font-size:14px; }
+    .ai-input-row button {
+      padding:0 20px; background:linear-gradient(135deg,var(--elder),var(--elder-dark));
+      color:#fff; border:none; border-radius:var(--radius-sm); cursor:pointer; font-weight:600; font-family:var(--font);
+    }
 
-    .quick-actions { display:flex; gap:12px; margin-bottom:24px; flex-wrap:wrap; }
-    .quick-btn { padding:14px 24px; border-radius:4px; border:3px solid var(--border); background:var(--bg-card); cursor:pointer; font-size:14px; font-weight:500; transition:var(--transition); font-family:var(--font); }
-    .quick-btn:hover { border-color:var(--elder); background:var(--elder-light); }
+    .quick-actions { display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; }
+    .quick-btn {
+      padding:12px 20px; border-radius:var(--radius-sm);
+      border:1.5px solid var(--border); background:var(--bg-card);
+      backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+      cursor:pointer; font-size:14px; font-weight:500;
+      transition:var(--transition); font-family:var(--font);
+    }
+    .quick-btn:hover { border-color:var(--elder); background:rgba(245,158,11,0.06); }
 
     .order-chip {
-      display:flex; align-items:center; gap:12px; padding:16px 22px;
-      background:var(--bg-card); border-radius:4px;
-      border:2px solid var(--border); margin-bottom:12px;
+      display:flex; align-items:center; gap:12px; padding:14px 18px;
+      background:var(--bg-card); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+      border-radius:var(--radius-sm);
+      border:1.5px solid var(--border); margin-bottom:10px;
     }
     .order-chip .badge-status { width:8px;height:8px;border-radius:50%;flex-shrink:0; }
-    .order-chip .badge-status.doing { background:var(--elder); }
+    .order-chip .badge-status.doing { background:var(--elder); box-shadow:0 0 8px rgba(245,158,11,0.4); }
     .order-chip .badge-status.done { background:var(--volunteer); }
     .order-chip .info { flex:1; font-size:14px; }
     .order-chip .info .name { font-weight:600; }
     .order-chip .info .time { font-size:13px; color:var(--text-secondary); }
-    .order-chip .tag-sm { font-size:12px; padding:2px 10px; border-radius:var(--radius-full); }
+    .order-chip .tag-sm { font-size:12px; padding:3px 10px; border-radius:var(--radius-full); font-weight:600; }
   </style>
 </head>
 <body>
   <button class="back-btn" onclick="goTo('../index.html')">←</button>
+  <button class="theme-btn" onclick="toggleTheme()" title="切换深浅色模式">🌙</button>
 
   <div class="elder-header">
     <h1>🏡 智伴晚晴 · 老人服务</h1>
@@ -89,12 +106,12 @@
     <!-- 服务网格 -->
     <h2 class="section-title">📋 常用服务</h2>
     <div class="serv-grid">
-      <div class="serv-item" onclick="openService('phone')"><div class="icon">📱</div><h4>手机教学</h4><p>学习使用智能手机</p></div>
-      <div class="serv-item" onclick="openService('life')"><div class="icon">🛵</div><h4>生活服务</h4><p>代购、陪同办事</p></div>
-      <div class="serv-item" onclick="openService('repair')"><div class="icon">🔧</div><h4>家电维修</h4><p>小家电故障报修</p></div>
-      <div class="serv-item" onclick="openService('health')"><div class="icon">💬</div><h4>健康陪伴</h4><p>聊天、读书、散步</p></div>
-      <div class="serv-item" onclick="openService('emergency')"><div class="icon">🚨</div><h4>紧急求助</h4><p>一键呼叫帮助</p></div>
-      <div class="serv-item" onclick="openService('policy')"><div class="icon">📋</div><h4>政策咨询</h4><p>养老政策解读</p></div>
+      <div class="serv-item" onclick="openService('phone')"><span class="icon">📱</span><h3>手机教学</h3><p>学习使用智能手机</p></div>
+      <div class="serv-item" onclick="openService('life')"><span class="icon">🛵</span><h3>生活服务</h3><p>代购、陪同办事</p></div>
+      <div class="serv-item" onclick="openService('repair')"><span class="icon">🔧</span><h3>家电维修</h3><p>小家电故障报修</p></div>
+      <div class="serv-item" onclick="openService('health')"><span class="icon">💬</span><h3>健康陪伴</h3><p>聊天、读书、散步</p></div>
+      <div class="serv-item" onclick="openService('emergency')"><span class="icon">🚨</span><h3>紧急求助</h3><p>一键呼叫帮助</p></div>
+      <div class="serv-item" onclick="openService('policy')"><span class="icon">📋</span><h3>政策咨询</h3><p>养老政策解读</p></div>
     </div>
 
     <!-- 最近服务 -->
@@ -103,18 +120,18 @@
       <div class="order-chip">
         <span class="badge-status doing"></span>
         <div class="info"><div class="name">📱 手机教学 · 张志愿者</div><div class="time">今天 14:00 · 进行中</div></div>
-        <span class="tag-sm tag tag-success">进行中</span>
+        <span class="tag tag-sm tag-success">进行中</span>
       </div>
       <div class="order-chip">
         <span class="badge-status done"></span>
         <div class="info"><div class="name">💬 健康陪伴 · 李志愿者</div><div class="time">2026-05-04 · 已完成</div></div>
-        <span class="tag-sm tag tag-volunteer">已完成</span>
+        <span class="tag tag-sm tag-volunteer">已完成</span>
       </div>
     </div>
   </div>
 
-  <!-- AI -->
-  <button class="ai-float-btn" id="aiFloatBtn" onclick="toggleAI()">🤖</button>
+  <!-- AI Floating -->
+  <button class="ai-float-btn" id="aiFloatBtn" onclick="toggleAI()">💬</button>
   <div class="ai-panel" id="aiPanel">
     <div class="ai-hdr">
       <div class="ai-avatar">🤖</div>
@@ -182,7 +199,6 @@
       chat.scrollTop = chat.scrollHeight;
     }
 
-    // 呼叫志愿者
     function callVolunteer() {
       openModal(`
         <h3>📞 呼叫志愿者</h3>
@@ -200,7 +216,6 @@
       speak('已通知志愿者，请保持手机畅通');
     }
 
-    // 预约教学
     function bookLesson() {
       openModal(`
         <h3>📱 手机教学预约</h3>
@@ -224,19 +239,17 @@
       closeModal();
       showToast(`✅ 已预约「${topic}」${time}，志愿者将在24小时内联系您`,'success');
       speak(`已收到您的预约`);
-      // 添加到最近服务
       const el = document.getElementById('recentOrders');
-      el.innerHTML = `<div class="order-chip"><span class="badge-status doing"></span><div class="info"><div class="name">📱 ${topic}</div><div class="time">${time} · 等待确认</div></div><span class="tag-sm tag tag-warning">待确认</span></div>` + el.innerHTML;
+      el.innerHTML = `<div class="order-chip"><span class="badge-status doing"></span><div class="info"><div class="name">📱 ${topic}</div><div class="time">${time} · 等待确认</div></div><span class="tag tag-sm tag-warning">待确认</span></div>` + el.innerHTML;
     }
 
-    // 通用服务申请
     function openService(type) {
       const svc = services[type];
       if (!svc) return;
       if (type === 'emergency') {
         openModal(`
           <h3>🚨 紧急求助</h3>
-          <p style="color:#C62828;font-weight:600;">是否确认发送紧急求助？平台将优先响应。</p>
+          <p style="color:#DC2626;font-weight:600;">是否确认发送紧急求助？平台将优先响应。</p>
           <div class="form-group" style="margin-bottom:16px;"><label>情况描述</label><input type="text" id="emerDesc" placeholder="简单描述您的情况" /></div>
           <div class="modal-actions">
             <button class="btn btn-elder btn-sm" onclick="submitService('emergency')">发送求助</button>
@@ -267,9 +280,8 @@
       closeModal();
       showToast(`✅ ${svc.name}申请已提交，志愿者将尽快联系您`,'success');
       speak(`您的${svc.name}申请已提交成功`);
-      // 添加到最近服务
       const el = document.getElementById('recentOrders');
-      el.innerHTML = `<div class="order-chip"><span class="badge-status doing"></span><div class="info"><div class="name">${svc.icon} ${svc.name}</div><div class="time">刚刚提交 · 等待志愿者接单</div></div><span class="tag-sm tag tag-warning">待接单</span></div>` + el.innerHTML;
+      el.innerHTML = `<div class="order-chip"><span class="badge-status doing"></span><div class="info"><div class="name">${svc.icon} ${svc.name}</div><div class="time">刚刚提交 · 等待志愿者接单</div></div><span class="tag tag-sm tag-warning">待接单</span></div>` + el.innerHTML;
     }
   </script>
 </body>

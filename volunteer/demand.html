@@ -6,22 +6,27 @@
   <title>需求大厅 · 智伴晚晴</title>
   <link rel="stylesheet" href="../assets/style.css" />
   <style>
-    .title-header { text-align:center; padding:20px 0; }
-    .title-header h1 { font-size:32px; color:var(--volunteer); }
-    .filter-bar { display:flex; flex-wrap:wrap; gap:12px; margin-bottom:24px; }
-    .filter-bar select,.filter-bar input { flex:1; min-width:140px; }
-    .demand-list { display:flex; flex-direction:column; gap:16px; }
-    .demand-card { background:var(--bg-card); border-radius:6px; padding:24px 28px; box-shadow:var(--shadow); border:3px solid var(--border); transition:var(--transition); }
-    .demand-card:hover { box-shadow:var(--shadow-hover); }
-    .demand-card .top { display:flex; justify-content:space-between; align-items:start; margin-bottom:8px; }
-    .demand-card h4 { font-size:20px; font-weight:600; }
-    .demand-card .meta { display:flex; gap:16px; font-size:14px; color:var(--text-secondary); flex-wrap:wrap; }
-    .demand-card .actions { margin-top:12px; display:flex; gap:10px; }
+    .title-header { text-align:center; padding:16px 0; }
+    .title-header h1 { font-size:28px; font-weight:800; background:linear-gradient(135deg,var(--volunteer),var(--elder)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .filter-bar { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:20px; }
+    .filter-bar select,.filter-bar input { flex:1; min-width:130px; }
+    .demand-list { display:flex; flex-direction:column; gap:14px; }
+    .demand-card {
+      background:var(--bg-card); backdrop-filter:blur(12px) saturate(1.3); -webkit-backdrop-filter:blur(12px) saturate(1.3);
+      border-radius:var(--radius); padding:20px 24px;
+      box-shadow:var(--shadow); border:1px solid var(--border); transition:var(--transition);
+    }
+    .demand-card:hover { box-shadow:var(--shadow-lg); }
+    .demand-card .top { display:flex; justify-content:space-between; align-items:start; margin-bottom:6px; }
+    .demand-card h3 { font-size:18px; font-weight:600; }
+    .demand-card .meta { display:flex; gap:14px; font-size:13px; color:var(--text-secondary); flex-wrap:wrap; }
+    .demand-card .actions { margin-top:10px; display:flex; gap:10px; }
     .empty-state { text-align:center; padding:60px 20px; color:var(--text-muted); }
-    .empty-state .icon { font-size:48px; margin-bottom:12px; }
+    .empty-state .icon { font-size:42px; margin-bottom:10px; }
   </style>
 </head>
 <body>
+  <button class="theme-btn" onclick="toggleTheme()" title="切换深浅色模式">🌙</button>
   <nav class="navbar">
     <ul class="nav-list">
       <li class="nav-item"><a href="dashboard.html">首页</a></li>
@@ -39,7 +44,7 @@
       <input type="text" id="filterSearch" placeholder="搜索老人姓名或地址..." oninput="applyFilters()" />
     </div>
     <div class="demand-list" id="demandList"></div>
-    <div class="text-center mt-24" style="color:var(--text-muted);font-size:14px;" id="endMarker">—— 加载完成 ——</div>
+    <div class="text-center mt-24" style="color:var(--text-muted);font-size:13px;" id="endMarker">—— 加载完成 ——</div>
   </div>
   <div class="toast"></div>
   <script src="../assets/app.js"></script>
@@ -65,7 +70,7 @@
       el.innerHTML = list.map(d => {
         const tagClass = d.urgency === '紧急' ? 'tag-danger' : d.urgency === '普通' ? 'tag-warning' : 'tag-volunteer';
         return `<div class="demand-card">
-          <div class="top"><h4>${d.name} · ${d.type}</h4><span class="tag ${tagClass}">${d.urgency}</span></div>
+          <div class="top"><h3>${d.name} · ${d.type}</h3><span class="tag ${tagClass}">${d.urgency}</span></div>
           <div class="meta"><span>📍 ${d.area}</span><span>🕐 ${d.time}</span><span>👴 ${d.age}岁</span></div>
           <p class="text-secondary" style="font-size:14px;">${d.desc}</p>
           <div class="actions"><button class="btn btn-volunteer btn-sm" onclick="acceptOrder(this,'${d.name}')">接单</button></div>

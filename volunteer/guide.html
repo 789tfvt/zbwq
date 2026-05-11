@@ -8,26 +8,45 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <style>
-    .title-header { display:flex; align-items:center; justify-content:center; gap:16px; padding:20px 0; flex-wrap:wrap; }
-    .title-header h1 { font-size:32px; color:var(--volunteer); }
+    .title-header { display:flex; align-items:center; justify-content:center; gap:14px; padding:16px 0; flex-wrap:wrap; }
+    .title-header h1 { font-size:28px; font-weight:800; background:linear-gradient(135deg,var(--volunteer),var(--elder)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
     .layout { display:flex; gap:24px; flex-wrap:wrap; }
-    .sidebar { flex:1; min-width:200px; max-width:260px; }
+    .sidebar { flex:1; min-width:180px; max-width:240px; }
     .content { flex:3; min-width:300px; }
-    .sidnav { background:var(--bg-card); border-radius:6px; padding:24px; box-shadow:var(--shadow); border:3px solid var(--border); position:sticky; top:80px; }
-    .sidnav h4 { font-size:16px; font-weight:600; margin-bottom:12px; color:var(--volunteer); }
-    .sidnav a { display:block; padding:12px 0; font-size:16px; color:var(--text-secondary); cursor:pointer; border-bottom:1px solid var(--border); transition:var(--transition); }
+    .sidnav {
+      background:var(--bg-card); backdrop-filter:blur(12px) saturate(1.3); -webkit-backdrop-filter:blur(12px) saturate(1.3);
+      border-radius:var(--radius); padding:20px;
+      box-shadow:var(--shadow); border:1px solid var(--border);
+      position:sticky; top:70px;
+    }
+    .sidnav h2 { font-size:15px; font-weight:700; margin-bottom:10px; }
+    .sidnav a {
+      display:block; padding:10px 0; font-size:14px; color:var(--text-secondary);
+      cursor:pointer; border-bottom:1px solid var(--border);
+      transition:var(--transition);
+    }
     .sidnav a:last-child { border-bottom:none; }
-    .sidnav a:hover { color:var(--volunteer); padding-left:4px; text-decoration:none; }
-    .sec { background:var(--bg-card); border-radius:6px; padding:36px; box-shadow:var(--shadow); border:3px solid var(--border); margin-bottom:24px; }
-    .sec h2 { font-size:26px; font-weight:700; color:var(--volunteer); margin-bottom:16px; }
-    .sec h3 { font-size:18px; font-weight:600; margin:20px 0 10px; }
-    .sec p,.sec li { font-size:17px; line-height:1.8; color:var(--text-secondary); }
-    .sec ul { padding-left:20px; }
-    .sec .tip-box { background:var(--volunteer-light); padding:20px; border-radius:var(--radius-sm); margin:16px 0; font-size:17px; border-left:6px solid var(--volunteer); }
+    .sidnav a:hover { color:var(--volunteer); padding-left:4px; }
+    .sec {
+      background:var(--bg-card); backdrop-filter:blur(12px) saturate(1.3); -webkit-backdrop-filter:blur(12px) saturate(1.3);
+      border-radius:var(--radius); padding:28px;
+      box-shadow:var(--shadow); border:1px solid var(--border);
+      margin-bottom:20px;
+    }
+    .sec h2 { font-size:22px; font-weight:700; margin-bottom:14px; background:linear-gradient(135deg,var(--volunteer),var(--volunteer-dark)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .sec h3 { font-size:17px; font-weight:600; margin:16px 0 8px; }
+    .sec p,.sec li { font-size:15px; line-height:1.8; color:var(--text-secondary); }
+    .sec ul { padding-left:18px; }
+    .sec .tip-box {
+      background:rgba(16,185,129,0.06); padding:16px 20px;
+      border-radius:var(--radius-sm); margin:12px 0;
+      font-size:14px; border:1px solid rgba(16,185,129,0.15);
+    }
     @media (max-width:768px) { .sidebar { display:none; } }
   </style>
 </head>
 <body>
+  <button class="theme-btn" onclick="toggleTheme()" title="切换深浅色模式">🌙</button>
   <nav class="navbar">
     <ul class="nav-list">
       <li class="nav-item"><a href="dashboard.html">首页</a></li>
@@ -44,7 +63,7 @@
     <div class="layout">
       <div class="sidebar">
         <div class="sidnav">
-          <h4>📑 目录</h4>
+          <h2>📑 目录</h2>
           <a onclick="scrollTo('s1')">一、服务规范</a>
           <a onclick="scrollTo('s2')">二、沟通技巧</a>
           <a onclick="scrollTo('s3')">三、安全须知</a>
@@ -107,7 +126,7 @@
           </ul>
           <div class="tip-box">🤖 平台已接入百度语音识别，支持普通话和粤语识别，更多方言持续接入中。</div>
         </div>
-        <div class="text-center" style="color:var(--text-muted);font-size:14px;padding:20px;">— 持续更新中，感谢每一位志愿者的付出 —</div>
+        <div class="text-center" style="color:var(--text-muted);font-size:13px;padding:16px;">— 持续更新中，感谢每一位志愿者的付出 —</div>
       </div>
     </div>
   </div>
