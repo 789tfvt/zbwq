@@ -1,6 +1,7 @@
 // 智伴晚晴 · 语音识别后端
 // 腾讯云语音识别 API 代理
 
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
