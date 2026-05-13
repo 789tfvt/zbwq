@@ -1,32 +1,31 @@
 // 智伴晚晴 · 语音识别后端
-// 百度语音识别 API 代理
+// 腾讯云语音识别 API 代理
 
 const express = require('express');
-const axios = require('axios');
 const cors = require('cors');
 const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// 百度智能云 AK/SK（优先使用环境变量，部署到 Railway 时设置）
-const BAIDU_AK = process.env.BAIDU_AK;
-const BAIDU_SK = process.env.BAIDU_SK;
+// 腾讯云 API 密钥（部署到服务器时设置环境变量）
+const TENCENT_SECRET_ID = process.env.TENCENT_SECRET_ID;
+const TENCENT_SECRET_KEY = process.env.TENCENT_SECRET_KEY;
+
+let AsrClient;
+try {
+  AsrClient = require('tencentcloud-sdk-nodejs-asr').asr.v20190614.Client;
+} catch (e) {
+  console.warn('\n⚠️  腾讯云语音识别 SDK 未安装，语音功能不可用');
+  console.warn('   请执行: npm install tencentcloud-sdk-nodejs-asr\n');
+}
 
 app.use(cors());
 app.use(express.json({ limit: '20mb' }));
 app.use(express.urlencoded({ extended: true, limit: '20mb' }));
 
-// 静态文件服务：提供前端页面（index.html、elder/、volunteer/、admin/）
+// 静态文件服务：提供前端页面
 app.use(express.static(path.join(__dirname, '..')));
-
-// 获取百度 Access Token
-async function getToken() {
-  const url = `https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=${BAIDU_AK}&client_secret=${BAIDU_SK}`;
-  const res = await axios.post(url);
-  if (!res.data.access_token) throw new Error('Token 获取失败');
-  return res.data.access_token;
-}
 
 // 语音识别
 app.post('/api/voice/recognize', async (req, res) => {
@@ -34,28 +33,42 @@ app.post('/api/voice/recognize', async (req, res) => {
     const { audioBase64, language } = req.body;
     if (!audioBase64) return res.json({ code: -1, msg: '音频数据为空' });
 
-    const dev_pid = language === 'cantonese' ? 1637 : 1537;
-    const token = await getToken();
+    if (!AsrClient || !TENCENT_SECRET_ID || !TENCENT_SECRET_KEY) {
+      return res.json({ code: -1, msg: '语音识别服务未配置' });
+    }
 
-    const payload = {
-      format: 'pcm', rate: 16000, channel: 1,
-      cuid: 'zbwq-' + Date.now(), dev_pid,
-      token, speech: audioBase64,
-      len: Math.max(1, Math.floor(audioBase64.length * 3 / 4))
-    };
-
-    const result = await axios.post('https://vop.baidu.com/server_api', payload, {
-      headers: { 'Content-Type': 'application/json' }, timeout: 10000
+    const client = new AsrClient({
+      credential: {
+        secretId: TENCENT_SECRET_ID,
+        secretKey: TENCENT_SECRET_KEY,
+      },
+      region: 'ap-guangzhou',
+      profile: {
+        httpProfile: { endpoint: 'asr.tencentcloudapi.com' },
+      },
     });
 
-    const d = result.data;
-    if (d.err_no === 0 && Array.isArray(d.result) && d.result.length > 0) {
-      res.json({ code: 0, msg: '识别成功', result: d.result[0].trim() });
+    const audioBytes = Math.max(1, Math.floor(audioBase64.length * 3 / 4));
+    const engSerViceType = language === 'cantonese' ? '16k_zh' : '16k_zh';
+
+    const params = {
+      EngSerViceType: engSerViceType,
+      SourceType: 1,
+      VoiceFormat: 'pcm',
+      Data: audioBase64,
+      DataLen: audioBytes,
+    };
+
+    const result = await client.SentenceRecognition(params);
+    const text = (result.Result || '').trim();
+
+    if (text) {
+      res.json({ code: 0, msg: '识别成功', result: text });
     } else {
-      res.json({ code: -1, msg: `识别失败：${d.err_msg || '未知错误'}` });
+      res.json({ code: -1, msg: '识别结果为空，请重试' });
     }
   } catch (e) {
-    res.json({ code: -1, msg: `服务异常：${e.message}` });
+    res.json({ code: -1, msg: `识别失败：${e.message}` });
   }
 });
 
@@ -65,9 +78,9 @@ app.get('/health', (req, res) => {
 });
 
 // 启动前检查必要的环境变量
-if (!BAIDU_AK || !BAIDU_SK) {
-  console.warn('\n⚠️  百度语音识别 AK/SK 未配置，语音功能不可用');
-  console.warn('   请在 Railway 中设置 BAIDU_AK 和 BAIDU_SK 环境变量\n');
+if (!TENCENT_SECRET_ID || !TENCENT_SECRET_KEY) {
+  console.warn('\n⚠️  腾讯云语音识别 SecretId/SecretKey 未配置');
+  console.warn('   请在环境变量中设置 TENCENT_SECRET_ID 和 TENCENT_SECRET_KEY\n');
 }
 
 app.listen(PORT, () => {
